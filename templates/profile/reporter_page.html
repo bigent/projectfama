@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+    <title>profile page of {{ reporter.user.username }} - projectfama</title>
+
+
+    <span id="page-box">
+        <div id="left-profile">
+            <img src="{{ reporter.profile_picture.url }}">
+            <span class="profile-pic-back"></span>
+            <span class="profile-pic-back-2"></span>
+            <span id="username">{{ reporter.user.username }}</span>
+            <span id="title">noob reporter</span>
+
+
+            <div id="bar">
+                <div id="info">
+                    <div id="info-tab">
+                        <i class="fa fa-newspaper-o"></i>
+                        <div id="data">{{ reporter.get_famas|length }}</div>
+                        <div id="name">famas</div>
+                    </div>
+
+                    <div id="info-tab">
+                        <i class="fa fa-trophy"></i>
+                        <div id="data">0</div>
+                        <div id="name">trophy</div>
+                    </div>
+                </div>
+
+
+                <div id="level-bar">
+                    <div id="persent"><strong>level {{ reporter.level_info.level }}</strong> - {{ reporter.level_info.percent }}%</div>
+                    <div id="full" style="width: {{ reporter.level_info.percent }}%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="famas-box" style="top: 210px;position: relative;margin: 0 20px;margin-bottom: 50px">
+            {% include 'common/list_fama.html' %}
+        </div>
+    </span>
+{% endblock %}

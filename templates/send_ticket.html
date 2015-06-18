@@ -1,0 +1,26 @@
+<title>send a ticket - projectfama</title>
+{% extends 'registration/base.html' %}
+{% block content %}
+    {% if form.non_field_errors or form.errors %}
+        <div id="form_errors">
+            <i class="fa fa-exclamation-triangle"></i>
+            <i class="fa fa-times"></i>
+            {% for i in form.non_field_errors %}
+                <div id="error">{{ i }}</div>
+            {% endfor %}
+            {% for i in form.messagge.errors %}
+                <div id="error">{{ i }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div id="main-box">
+    <form action method="post">
+        {% csrf_token %}
+        <textarea style="max-width: 340px" class="input-text" cols="40" id="id_messagge" maxlength="510" name="messagge" rows="10"></textarea>
+        <button style="width: 100%;background-color: rgba(192, 2, 56, 1)" class="button" type="submit">
+                <i class="fa fa-flag"></i>
+                SEND A TICKET
+            </button>
+    </form></div>
+{% endblock %}

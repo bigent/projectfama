@@ -1,0 +1,7 @@
+{% if famas %}
+    {% for fama in famas %}
+        {% include 'common/normal_fama_box.html' %}
+    {% endfor %}
+{% else %}
+    <span id="no-results" style="top:0">No found famas</span>
+{% endif %}

@@ -1,0 +1,212 @@
+﻿{% extends "base.html" %}
+{% block content %}
+    <title>projectfama</title>
+
+
+    <span id="page-box">
+        <div id="map-box">
+            <div id="left-box">
+                <input class="input-text" id="search-box" type="text" placeholder="enter a place name">
+                <ul id="results">
+                </ul>
+            </div>
+            <div id="right-box">
+                <div id="map" style="height: 275px"></div>
+            </div>
+        </div>
+
+
+        {% if user.is_authenticated %}
+            <div id="add-famas" style="display: none">
+                <span id="write-fama">
+                    ⁺<i class="fa fa-newspaper-o"></i>&nbsp;<strong>create new fama</strong>
+                </span>
+
+
+                <form action="" method="post" style="display: none">
+                    {% csrf_token %}
+                    <input class="input-text" id="id_title" maxlength="100" name="title" type="text" placeholder="Please click and enter title of your fama">
+                    <textarea class="input-text" cols="40" id="id_desc" maxlength="350" name="desc" rows="10" placeholder="Please click and enter description of your fama"></textarea>
+                    <input id="id_place" name="place" hidden>
+
+                    <button class="button" type="submit">
+                        <i class="fa fa-paper-plane"></i>
+                        SEND
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+    </span>
+
+
+    <script>
+        //mapbox api config
+        L.mapbox.accessToken = 'pk.eyJ1IjoiZ2FsYWtzaWRla2l0b3N0IiwiYSI6ImZiMDIwMjYyMzJjNmUzYjU1NzQyMTcyZDJjY2ZmNTg5In0.Jx_K9qlusw9MjeDulvMnnQ';
+
+        var map = L.mapbox.map('map', 'galaksidekitost.a210e0fc')
+                .setView([45.7, 18.8], 12);
+
+        // Credit Foursquare for their wonderful data
+        map.attributionControl.addAttribution('<a href="https://foursquare.com/">Places data from Foursquare</a>');
+
+        var foursquarePlaces = L.layerGroup().addTo(map);
+
+
+        //if search-box has changed:
+        $('#search-box')[0].addEventListener('input', function () {
+            map.remove();
+            map = L.mapbox.map('map', 'galaksidekitost.a210e0fc').setView([45.7, 18.8], 12);
+            map.attributionControl.addAttribution('<a href="https://foursquare.com/">Places data from Foursquare</a>');
+            foursquarePlaces = L.layerGroup().addTo(map);
+
+            //get data via projectfama from foursquare (ajax)
+            $.get('{% url "search_places" %}?query='+this.value, function (data) {
+                var json = JSON.parse(data);
+
+                $('#left-box #results').html("");
+
+                //to can use other elements
+                var results = {};
+
+                for(i = 0; i < 10; i++){
+                    try{
+                        var ven = json.venues[i];
+                        var name = ven.name;
+                        var icon = ven.categories[0].icon.prefix+'bg_44'+ven.categories[0].icon.suffix;
+                        var adress = ven.location.formattedAddress;
+                        var categories = ven.categories[0].shortName;
+                        var latlng = L.latLng(ven.location.lat, ven.location.lng);
+
+
+                        //for now only icon url
+                        results[name] = {};
+                        results[name]["icon"] = icon;
+                        results[name]["id"] = ven.id;
+
+
+                        //icons in mapbox
+                        var myIcon = L.icon({
+                            iconUrl: icon,
+                            iconRetinaUrl: 'maki/renders/'+categories+'-18@2x.png'
+                        });
+
+
+                        //marker on the map
+                        var marker = L.marker(latlng, {icon: myIcon} ).bindPopup('<strong style="font-size: 14px;">'+name+'</strong><br><i style="font-size:11px;">'+categories+'</i><br><small>'+adress+'</small>').addTo(foursquarePlaces);
+
+                        //add the result in results's box
+                        $('#left-box #results').append('<span id="result"><img title="'+categories+'" src="'+icon+'" /><li><span class="name">'+name+'</span><br><small>'+adress+'</small></li><div class="location" style="display:none">'+ven.location.lat+','+ven.location.lng+'</div><div class="shortName" style="display:none">'+categories+'</div></span>');
+
+
+                        //if the result is first result, go to its location on the map
+                        if(i == 0){
+                            map.setView(latlng, 15);
+                        }
+                    } catch(e){}
+                }
+
+
+                //if cursor is on the result, go to its location on the map
+                $('#map-box #left-box #results #result').mouseover( function() {
+                    var latlng = this.getElementsByClassName('location')[0].innerText.split(",");
+                    map.setView(latlng, 15);
+                });
+
+
+                //if you click on the result
+                $('#map-box #left-box #results #result').click( function() {
+                    $('#famas-box').remove();
+                    //buraya
+                    $('#famas-box').html("");
+                    var name = this.getElementsByClassName("name")[0].innerText;
+
+                    var icon_url = results[name]["icon"];
+                    icon_url = icon_url.substring(0, icon_url.indexOf("bg_44"))+"64.png";
+
+
+                    if($('#venue-box') !== []){
+                        $('#venue-box').remove();
+                    }
+
+                    var html =
+                            '<div id="venue-box"><img id="icon" src="'+icon_url+'" />' +
+                            '<div id="venue-name"><span id="venue-name-before">Famas in </span><a href="{% url "famas" %}?place_id='+results[name]['id']+'">'+name+'</a></div>' +
+                            '</div>';
+
+                    $('#page-box').append(html);
+
+                    html = $('#add-famas');
+                    $('#venue-box').insertBefore(html);
+                    $('#add-famas').css('display', 'block');
+
+
+                    //place id of clicked set value of input
+                    $('#add-famas form #id_place').attr("value", results[name]['id']);
+
+
+                    //get the result of result
+                    $.get('{% url "list_famas" %}?place='+results[name]['id'], function (data){
+                        var json = JSON.parse(data);
+                        console.log(json.length);
+
+                        //if the result of result has, get result
+                        if (json.length !== 0) {
+                            $('#page-box').append("<div id='famas-box'></div>");
+                            for (i = 0; json.length > i; i++) {
+                                var fama = json[i];
+                                var tem =
+                                        '<div id="normal-fama-box">' +
+                                        '<div id="date" title="' + fama.date.day + ' ' + fama.date.month + ' ' + fama.date.year + '">' +
+                                        '<i class="fa fa-calendar-o"></i>' +
+                                        '<span id="day">' + fama.date.day + '</span>' +
+                                        '<span id="month">' + fama.date.month.toUpperCase() + '</span>' +
+                                        '</div>' +
+                                        '<div id="title">' +
+                                        fama.title +
+                                        '&nbsp;<span>by <a id="author-name" href="#">'+fama.author+'</a>&nbsp;<i>at <a href="{% url 'fama' %}?id='+fama.id+'">'+fama.date.hour+':'+fama.date.minute+'</a></i></span>' +
+                                        '</div>' +
+                                        '<div id="description">' +
+                                        fama.desc +
+                                        '</div>' +
+                                        '<div id="images">' +
+                                        '<img id="image" style="background-image: url(http://img-s2.onedio.com/id-55643a9a4d397cfd6e6a79db/rev-0/w-300/h-155/f-jpg/s-bb5f0f23bf51cada7080b946afbb5368b0630099.jpg)">' +
+                                        '<img id="image" style="background-image: url(http://img-s1.onedio.com/id-556584378b24dc8c47fe0648/rev-0/w-300/h-150/f-jpg/s-8e938f293de4650ceb51434d7b3d0d9fc4295095.jpg)">' +
+                                        '<img id="image" style="background-image: url(http://img-s2.onedio.com/id-5564ffd0a37172a7337df26f/rev-0/w-300/h-150/f-jpg/s-1b2fb615b23db43a45a3d4f7233bf7b933243f41.jpg)">' +
+                                        '<img id="image" style="background-image: url(http://img-s1.onedio.com/id-5564bdd0aae009d840fe7108/rev-0/w-200/h-100/f-jpg/s-5afa166d069bfac2a9c118a8eeaf9eb07ac2b293.jpg)">' +
+                                        '</div>' +
+                                        '</div>';
+
+                                $('#famas-box').append(tem);
+                            }
+                        }else{
+                            $('#page-box #famas-box').remove();
+                        }
+                    }).fail(function () {
+                        $('#page-box #famas-box').remove();
+                        $('#page-box').append('<div id="famas-box"><span id="no-results" style="top:0">No found famas</span></div>')
+                    });
+                });
+//a
+                var form = $('#add-famas form');
+                var title = $('#add-famas form #id_title');
+                var place =$('#add-famas form #id_place');
+
+                //if you click send button on the form
+                form.submit(function(e){
+                    //$('body').append();
+                    var loading =
+                            '<div class="loading" style="height: 100%;width: 100%;position: fixed;opacity: 0.8;z-index: 9999;background-color: #000000;">'+
+                            '<div style="top: 50%;width: 100%;font-size: 80px;text-align: center;position: fixed;""><i class="fa fa-cog fa-spin" style="line-height: 100%;height: 10%;"></i></div>'+
+                            '</div>';
+                    $('body').append(loading);
+
+                    $.post("{% url 'send_fama' %}", $(this).serialize());
+                    e.preventDefault();
+                    form[0].reset();
+                    $('.loading').remove();
+                });
+            });
+        });
+    </script>
+    <script src="/static/js/fama.js"></script>
+{% endblock content %}

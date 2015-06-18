@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+    <style>
+        #page-box #venue-box{
+            background-image: url('/static/images/last_minute_famas.jpg');
+            padding: 0;
+            margin-top: 0;
+        }
+
+        #page-box #venue-box #venue-name{
+            margin: 0;
+            padding: 50px;
+            background-color: rgba(0,0,0,0.4);
+            color: #ffffff;
+        }
+    </style>
+
+
+    <span id="page-box">
+
+        <div id="venue-box">
+
+            <div id="venue-name">
+                <span id="venue-name-before"><strong>last minute</strong> famas
+            </div>
+        </div>
+
+        <div id="famas-box">
+            {% include 'common/list_fama.html' %}
+        </div>
+    </span>
+{% endblock %}

@@ -1,0 +1,49 @@
+<title>log in - projectfama</title>
+{% extends 'registration/base.html' %}
+{% block content %}
+    {% if form.non_field_errors or form.errors %}
+        <div id="form_errors">
+            <i class="fa fa-exclamation-triangle"></i>
+            <i class="fa fa-times"></i>
+
+            {% for i in form.non_field_errors %}
+                <div id="error">{{ i }}</div>
+            {% endfor %}
+
+            {% for i in form.username.errors %}
+                <div id="error">{{ i }}</div>
+            {% endfor %}
+
+            {% for i in form.password.errors %}
+                <div id="error">{{ i }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+
+    <div id="main-box">
+        <form method="post" action="{% url 'login' %}">{% csrf_token %}
+            <input id="id_username" maxlength="254" name="username" type="text" placeholder="username" class="default-input-text">
+            <input id="id_password" name="password" type="password" placeholder="password" class="default-input-text">
+
+            <button style="width: 100%" class="button" type="submit">
+                <i class="fa fa-sign-in"></i>
+                LOG IN
+            </button>
+
+            <input type="hidden" name="next" value="{{ next }}" />
+        </form>
+
+        <div id="forget-password">
+            <a href="{% url 'password_reset' %}">
+                forgot <span style="font-weight: 900">your password</span>?
+            </a>
+        </div>
+
+        <div id="sig-in">
+            <a href="{% url 'register' %}">
+                do not you even have an account? <span style="font-weight: 900">sign in</span>
+            </a>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,31 @@
+<title>change email - projectfama</title>
+{% extends 'settings/base.html' %}
+{% block content %}
+    {% if form.non_field_errors or form.errors %}
+        <div id="form_errors">
+            <i class="fa fa-exclamation-triangle"></i>
+            <i class="fa fa-times"></i>
+            {% for i in form.non_field_errors %}
+                <div id="error">{{ i }}</div>
+            {% endfor %}
+            {% for i in form.old_email.errors %}
+                <div id="error">{{ i }}</div>
+            {% endfor %}
+            {% for i in form.new_email.errors %}
+                <div id="error">{{ i }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+
+
+        <form method="post" action style="margin: 0">{% csrf_token %}
+            <input id="id_old_email" maxlength="254" name="old_email" type="email" placeholder="old email" class="default-input-text">
+            <input id="id_new_email" maxlength="254" name="new_email" type="email" placeholder="new email" class="default-input-text">
+
+            <button style="width: 100%;background-color: rgba(192, 2, 56, 1)" class="button" type="submit">
+                <i class="fa fa-envelope"></i>
+                CHANGE EMAIL
+            </button>
+        </form>
+{% endblock %}

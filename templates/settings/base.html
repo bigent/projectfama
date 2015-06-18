@@ -1,0 +1,42 @@
+<link rel="stylesheet" href="/static/css/base.css">
+<link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,700,800&subset=latin' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<link rel="stylesheet" href="/static/css/user_form.css">
+<link rel="stylesheet" href="/static/css/settings.css">
+
+
+<body>
+<span class="shadow"></span>
+
+
+<div id="login-page">
+    <div id="main-box" style="width: 525px">
+        <div id="settings-left-box">
+            <a href="{% url 'password_change' %}">
+                <i class="fa fa-key">change password</i>
+            </a>
+            <a href="{% url 'change_email' %}">
+                <i class="fa fa-envelope">change email</i>
+            </a>
+        </div>
+
+
+        <div id="settings-right-box">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+
+<div id="bottom">
+    <a href="{% url 'home' %}">
+        <div id="logo" style="background-color: transparent; padding: 0; margin: 0; min-width: none; max-width: none;">
+            <span id="light" style="font-size: 15px">project</span><span style="font-size: 15px" id="bold">fama</span>
+        </div>
+    </a>
+</div>
+</body>
+
+{% include 'common/analytics.html' %}
+<script src="/static/js/user_form_control.js"></script>

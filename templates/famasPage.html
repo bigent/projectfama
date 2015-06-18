@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+    <title>Famas in {{ venue.venue.name }} - projectfama</title>
+
+
+    <span id="page-box">
+        <div id="map-box">
+            <div id="map" style="height: 275px;width: 100%"></div>
+        </div>
+
+        <div id="venue-box">
+            <img id="icon" src="{{ venue.venue.categories.0.icon.prefix }}64{{ venue.venue.categories.0.icon.suffix }}"/>
+            <div id="venue-name">
+                <span id="venue-name-before">Famas in </span>{{ venue.venue.name }}</div>
+        </div>
+
+        {% if user.is_authenticated %}
+            <div id="add-famas">
+                <span id="write-fama">
+                    ⁺<i class="fa fa-newspaper-o"></i>&nbsp;<strong>create new fama</strong>
+                </span>
+
+
+                <form action="" method="post" style="display: none;">
+                    {% csrf_token %}
+                    <input class="input-text" id="id_title" maxlength="100" name="title" type="text" placeholder="Please click and enter title of your fama">
+                    <textarea class="input-text" cols="40" id="id_desc" maxlength="350" name="desc" rows="10" placeholder="Please click and enter description of your fama"></textarea>
+                    <input id="id_place" name="place" value="{{ venue.venue.id }}" hidden>
+
+                    <button class="button" type="submit">
+                        <i class="fa fa-paper-plane"></i>
+                        SEND
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+
+
+        <div id="famas-box">
+            {% include 'common/list_fama.html' %}
+        </div>
+    </span>
+
+    <script>
+    //mapbox api config
+    L.mapbox.accessToken = 'pk.eyJ1IjoiZ2FsYWtzaWRla2l0b3N0IiwiYSI6ImZiMDIwMjYyMzJjNmUzYjU1NzQyMTcyZDJjY2ZmNTg5In0.Jx_K9qlusw9MjeDulvMnnQ';
+
+    var map = L.mapbox.map('map', 'galaksidekitost.a210e0fc')
+            .setView([{{ venue.venue.location.lat }}, {{ venue.venue.location.lng }}], 12);
+
+    // Credit Foursquare for their wonderful data
+    map.attributionControl.addAttribution('<a href="https://foursquare.com/">Places data from Foursquare</a>');
+
+    var foursquarePlaces = L.layerGroup().addTo(map);
+
+    var latlng = L.latLng({{ venue.venue.location.lat }}, {{ venue.venue.location.lng }});
+
+
+    var icon = '{{ venue.venue.categories.0.icon.prefix}}'+'bg_44'+'{{ venue.venue.categories.0.icon.suffix}}';
+
+    var myIcon = L.icon({
+        iconUrl: icon,
+        iconRetinaUrl: 'maki/renders/'+'{{ venue.venue.categories.0.shortName }}'+'-18@2x.png'
+    });
+
+    var marker = L.marker(latlng, {icon: myIcon} ).bindPopup('<strong style="font-size: 14px;">'+'{{ venue.venue.name }}'+'</strong><br><i style="font-size:11px;">'+'{{ venue.venue.categories.0.shortName }}'+'</i><br><small>'+'{{ venue.venue.location.formattedAddress.0 }}'+'</small>').addTo(foursquarePlaces);
+
+    var form = $('#add-famas form');
+    form.submit(function(e){
+        //$('body').append();
+        var loading =
+                '<div class="loading" style="height: 100%;width: 100%;position: fixed;opacity: 0.8;z-index: 9999;background-color: #000000;">'+
+                '<div style="top: 50%;width: 100%;font-size: 80px;text-align: center;position: fixed;""><i class="fa fa-cog fa-spin" style="line-height: 100%;height: 10%;"></i></div>'+
+                '</div>';
+
+        $('body').append(loading);
+
+        $.post('{% url "send_fama" %}', $(this).serialize());
+        e.preventDefault();
+        form[0].reset();
+        $('.loading').remove();
+    });
+    </script>
+    <script src="/static/js/fama.js"></script>
+{% endblock %}

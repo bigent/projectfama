@@ -1,0 +1,42 @@
+<title>register - projectfama</title>
+{% extends 'registration/base.html' %}
+{% block content %}
+    {% if userForm.non_field_errors or userForm.errors %}
+        <div id="form_errors">
+            <i class="fa fa-exclamation-triangle"></i>
+            <i class="fa fa-times"></i>
+
+            {% for i in userForm.non_field_errors %}
+                <div id="error">{{ i }}</div>
+            {% endfor %}
+
+            {% for i in userForm.username.errors %}
+                <div id="error">{{ i }}</div>
+            {% endfor %}
+
+            {% for i in userForm.password.errors %}
+                <div id="error">{{ i }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+
+    <div id="main-box">
+        <form method="post" action>
+            {% csrf_token %}
+            <input id="id_username" maxlength="30" name="username" type="text" placeholder="username" class="default-input-text">
+            <input id="id_email" maxlength="254" name="email" type="email" placeholder="email" class="default-input-text">
+            <input id="id_password1" name="password1" type="password" placeholder="password" class="default-input-text">
+            <input id="id_password2" name="password2" type="password" placeholder="password again" class="default-input-text">
+
+            <button style="width: 100%;background-color: #006A4E" class="button" type="submit">
+                <i class="fa fa-sign-in"></i>
+                REGISTER
+            </button>
+        </form>
+
+        <div id="already-login">
+            <a href="{% url 'login' %}">did you have an account already? <span style="font-weight: 900">log in</span></a>
+        </div>
+    </div>
+{% endblock %}

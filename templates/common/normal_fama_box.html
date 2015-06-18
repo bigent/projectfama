@@ -1,0 +1,18 @@
+<div id="normal-fama-box">
+    <div id="date" title="{{ fama.pub_date.day }} {{ fama.pub_date|date:"b"|capfirst }} {{ fama.pub_date.year }}">
+        <i class="fa fa-calendar-o"></i>
+        <span id="day">{{ fama.pub_date.day }}</span>
+        <span id="month">{{ fama.pub_date|date:"b"|upper }}</span>
+    </div>
+    <div id="title">
+        <a href="{% url 'fama' %}?id={{ fama.id }}" style="font-weight: 900">{{ fama.title }}</a>&nbsp;
+        <span>
+            by <a id="author-name" href="{% url 'profile_page' %}?id={{ fama.author.id }}">{{ fama.author }}</a>
+            <i>at <a href="{% url 'fama' %}?id={{ fama.id }}">{{ fama.pub_date|date:"f"|upper }}</a></i>
+            in <a href="{% url 'famas' %}?place_id={{ fama.place }}">{{ fama.get_place }}</a>
+        </span>
+    </div>
+    <div id="description">
+        {{ fama.desc }}
+    </div>
+</div>

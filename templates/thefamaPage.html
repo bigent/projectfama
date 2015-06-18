@@ -1,0 +1,79 @@
+<meta charset="utf-8">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700,800&subset=latin' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.9/mapbox.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.9/mapbox.css' rel='stylesheet' />
+<link rel="stylesheet" href="/static/css/base.css">
+<title>{{ fama.title }} - projectfama</title>
+
+
+<body>
+<div id="front-content">
+
+    <div id="bottom">
+        <a href="{% url 'home' %}">
+            <div id="logo" style="background-color: transparent; padding: 0; margin: 0; min-width: none; max-width: none;">
+                <span id="light" style="font-size: 15px">project</span><span style="font-size: 15px" id="bold">fama</span>
+            </div>
+        </a>
+    </div>
+
+    <div id="fama-box">
+
+        <div id="top">
+            <a href="{% url 'home' %}">
+                <i class="fa fa-home" title="the home page"></i>
+            </a>
+
+            <a href="{% url 'famas' %}?place_id={{ venue.venue.id }}">
+                <i class="fa fa-map-marker" title="this place page"></i>
+            </a>
+        </div>
+
+
+        {% include 'common/normal_fama_box.html' %}
+    </div>
+</div>
+
+
+
+
+
+<div id="map" style="height: 100%;width: 100%"></div>
+</body>
+
+
+<script>
+    var height = $('#front-content #normal-fama-box').height() + 10;
+    $('#front-content #fama-box').css('height', height);
+
+
+    //mapbox api config
+    L.mapbox.accessToken = 'pk.eyJ1IjoiZ2FsYWtzaWRla2l0b3N0IiwiYSI6ImZiMDIwMjYyMzJjNmUzYjU1NzQyMTcyZDJjY2ZmNTg5In0.Jx_K9qlusw9MjeDulvMnnQ';
+
+    var map = L.mapbox.map('map', 'galaksidekitost.a210e0fc', {zoomControl: false})
+                .setView([{{ venue.venue.location.lat }} - ( $(window).height() * 5.5555e-5 ) , {{ venue.venue.location.lng }} + ( $(window).width() * 1.38888e-4 )  ], 12);
+
+
+    // Credit Foursquare for their wonderful data
+    map.attributionControl.addAttribution('<a href="https://foursquare.com/">Places data from Foursquare</a>');
+
+    var foursquarePlaces = L.layerGroup().addTo(map);
+
+    var latlng = L.latLng({{ venue.venue.location.lat }}, {{ venue.venue.location.lng }});
+
+    var icon = '{{ venue.venue.categories.0.icon.prefix}}'+'bg_44'+'{{ venue.venue.categories.0.icon.suffix}}';
+
+    var myIcon = L.icon({
+        iconUrl: icon,
+        iconRetinaUrl: 'maki/renders/'+'{{ venue.venue.categories.0.shortName }}'+'-18@2x.png'
+    });
+
+    var marker = L.marker(latlng, {icon: myIcon} ).bindPopup('<strong style="font-size: 14px;">'+'{{ venue.venue.name }}'+'</strong><br><i style="font-size:11px;">'+'{{ venue.venue.categories.0.shortName }}'+'</i><br><small>'+'{{ venue.venue.location.formattedAddress.0 }}'+'</small>').addTo(foursquarePlaces);
+
+    $(window).resize( function(){
+        map.setView([{{ venue.venue.location.lat }} - ( $(window).height() * 5.5555e-5 ) , {{ venue.venue.location.lng }} + ( $(window).width() * 1.38888e-4 )  ], 12);
+    });
+</script>

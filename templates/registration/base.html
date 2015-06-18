@@ -1,0 +1,27 @@
+<link rel="stylesheet" href="/static/css/base.css">
+<link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,700,800&subset=latin' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<link rel="stylesheet" href="/static/css/user_form.css">
+
+<body>
+<span class="shadow"></span>
+
+
+<div id="login-page">
+    {% block content %}{% endblock %}
+</div>
+
+
+<div id="bottom">
+    <a href="{% url 'home' %}">
+        <div id="logo" style="background-color: transparent; padding: 0; margin: 0; min-width: none; max-width: none;">
+            <span id="light" style="font-size: 15px">project</span><span style="font-size: 15px" id="bold">fama</span>
+        </div>
+    </a>
+</div>
+</body>
+
+
+<script src="/static/js/user_form_control.js"></script>
+{% include 'common/analytics.html' %}

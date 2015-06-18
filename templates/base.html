@@ -1,0 +1,111 @@
+<html>
+<meta charset="utf-8">
+<link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,700,800&subset=latin' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='//api.tiles.mapbox.com/mapbox.js/v2.1.9/mapbox.js'></script>
+<link href='//api.tiles.mapbox.com/mapbox.js/v2.1.9/mapbox.css' rel='stylesheet' />
+<link rel="stylesheet" href="/static/css/base.css">
+{% load custom_tags %}
+<body>
+<div id="page">
+    <div id="top-box">
+        <div id="logo">
+            <a href="{% url 'home' %}">
+                <span id="light">project</span><span id="bold">fama</span>
+                <span id="slogan">everywhere, every news</span>
+            </a>
+        </div>
+
+        <div id="bar">
+            {% if user.is_authenticated %}
+                <div id="user-tab">
+                <img title="{{ user.get_username }}" id="user-profile-picture" src="/media/images/avatars/no_picture.jpg" height="64px">
+                <i class="fa fa-caret-down"></i>
+                <div id="others">
+                    <a href="{% url 'profile_page' %}?id={{ user.id }}">
+                        <i class="fa fa-user">your profile</i>
+                    </a>
+                    <a href="{% url 'profile_page' %}?id={{ user.id }}#famas-box">
+                        <i class="fa fa-folder">your famas</i>
+                    </a>
+                    <a href="{% url 'settings_main' %}">
+                        <i class="fa fa-cog">settings</i>
+                    </a>
+                    <a href="{% url 'send_ticket' %}">
+                        <i class="fa fa-bug">send a ticket</i>
+                    </a>
+                    <a href="{% url 'logout' %}?next={% url 'login' %}">
+                        <i class="fa fa-sign-out">log out</i>
+                    </a>
+                </div>
+            </div>
+            {% else %}
+                <div id="user-tab" class="not-logined" style="background-color: #ffffff">
+                    <a href="{% url 'login' %}">
+                        <i class="fa fa-sign-in">log in</i>
+                    </a>
+                    <a href="{% url 'register' %}">
+                        <i class="fa fa-user-plus">register us</i>
+                    </a>
+                    <a href="{% url 'send_ticket' %}">
+                        <i class="fa fa-bug">send a ticket</i>
+                    </a>
+                </div>
+            {% endif %}
+
+            <div id="menus">
+                <a href="{% url 'last_minute_famas' %}">
+                    <div class="menus" id="last-minute">
+                        <div class="text"><strong>last minute</strong> famas</div>
+                    </div>
+                </a>
+
+                <div class="menus" id="nearest-places">
+                    <div class="text">famas in <strong>the nearest places</strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="center-box">
+        {% block content %}{% endblock content %}
+
+        <style>
+            #center-box #bottom-box{
+                padding: 25px;
+                margin-top: 10px;
+                background-color: #8C92AC;
+                color: #ffffff;
+            }
+
+            #center-box #bottom-box #logo-text{
+                font-size: 15px;
+                font-weight: 100;
+                display: -webkit-inline-box;
+
+            }
+
+            #center-box #bottom-box #copyright{
+                display: -webkit-inline-box;
+                font-size: 10px;
+                font-weight: 100;
+                margin-left: 10px;
+            }
+        </style>
+
+        {% if reporter %}
+            <div id="bottom-box" style="margin-top: 220px">
+        {% else %}
+            <div id="bottom-box">
+        {% endif %}
+            <div id="logo-text">project<strong style="font-weight: 900">fama</strong></div>
+            <div id="copyright">for now all rights reserved</div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script src="/static/js/base.js"></script>
+{% include 'common/analytics.html' %}
+</html>

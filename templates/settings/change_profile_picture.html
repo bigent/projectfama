@@ -1,0 +1,47 @@
+<title>change profile picture - projectfama</title>
+{% extends 'settings/base.html' %}
+{% block content %}
+    <style>
+        #current-picture{
+            font-size: 12px;
+            font-weight: 100;
+            margin: 30px;
+            float: left;
+        }
+
+
+        #current-picture img{
+            height: 96px;
+            display: -webkit-box;
+        }
+    </style>
+    {% if form.non_field_errors or form.errors %}
+        <div id="form_errors">
+            <i class="fa fa-exclamation-triangle"></i>
+            <i class="fa fa-times"></i>
+            {% for i in form.non_field_errors %}
+                <div id="error">{{ i }}</div>
+            {% endfor %}
+            {% for i in form.profile_picture.errors %}
+                <div id="error">{{ i }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div id="current-picture">
+        current:
+        <img src="{{ reporter.profile_picture.url }}">
+    </div>
+
+    <div id="new-picture">
+        <form action method="post" style="width: auto;margin: 20px 0 0 20px" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input id="id_profile_picture" name="profile_picture" type="file" style="margin-bottom: 10px">
+
+            <button style="width: 100%;background-color: rgba(192, 2, 56, 1)" class="button" type="submit">
+                <i class="fa fa-picture-o"></i>
+                CHANGE PROFILE<br>PICTURE
+            </button>
+        </form>
+    </div>
+{% endblock %}
